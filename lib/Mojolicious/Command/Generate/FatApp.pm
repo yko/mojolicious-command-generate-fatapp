@@ -10,6 +10,7 @@ use base 'Mojo::Command';
 our $VERSION = '0.0.1';
 
 # TODO add default $class.conf config template
+# TODO make templates configurable
 
 __PACKAGE__->attr(description => <<'EOF');
 Generate fat application.
@@ -64,8 +65,6 @@ sub run {
         "$name/templates/exception.html.ep");
     $self->render_to_rel_file('layout',
         "$name/templates/layouts/default.html.ep");
-    $self->render_to_rel_file('welcome',
-        "$name/templates/example/welcome.html.ep");
 }
 
 1;
@@ -237,20 +236,15 @@ use_ok('<%= $class %>::Model');
     </body>
 </html>
 @@ layout
-<!doctype html><html>
-    <head><title>Welcome</title></head>
-    <body><%== content %></body>
+<!doctype html>
+<html>
+<head>
+ <title>Welcome</title>
+</head>
+<body>
+%== content;
+</body>
 </html>
-@@ welcome
-% layout 'main';
-<h2><%= $message %></h2>
-This page was generated from the template
-"templates/example/welcome.html.ep" and the layout
-"templates/layouts/default.html.ep",
-<a href="<%== url_for %>">click here</a>
-to reload the page or
-<a href="/index.html">here</a>
-to move forward to a static page.
 __END__
 
 =head1 NAME
