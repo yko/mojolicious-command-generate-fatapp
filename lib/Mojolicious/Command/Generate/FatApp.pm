@@ -102,7 +102,7 @@ use base 'Mojolicious';
 __PACKAGE__->attr(
     'config' => sub { {
         loglevel => 'error',
-        secret   => sub { die "You shouldn't forget make your secrets - secret." },
+        layout => 'default',
      }
     }
 );
@@ -118,6 +118,8 @@ sub startup {
     });
 
 
+    $self->defaults(layout => $self->config->{'layout'});
+
     $self->plugin('tag_helpers');
 
 =for Perhaps, you want to use addictions plugins:
@@ -132,7 +134,8 @@ sub startup {
 
 =cut 
 
-    $self->secret($self->config->{'secret'});
+    $self->secret($self->config->{'secret'}) or
+        die "You shouldn't forget make your secrets - secret.";
 
     # Routes
     my $r = $self->routes;
