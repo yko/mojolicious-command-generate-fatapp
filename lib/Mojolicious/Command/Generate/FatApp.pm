@@ -54,6 +54,11 @@ sub run {
     # Log
     $self->create_rel_dir("$name/log");
 
+    # Static
+    $self->create_rel_dir("$name/public/js");
+    $self->create_rel_dir("$name/public/css");
+    $self->create_rel_dir("$name/public/img");
+
     # Layout and Templates
     $self->renderer->line_start('%%');
     $self->renderer->tag_start('<%%');
