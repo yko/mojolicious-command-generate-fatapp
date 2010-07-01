@@ -1,0 +1,39 @@
+fat-app version 0.0.1
+
+FatApp is a Mojolicious applications generator, 
+that generates more 'fat' application, then 'mojolicious generate app'.
+
+FatApp adds base controller and model classes, defines json_config loader
+and NOT defines any existing controller.
+
+FatApp generated skeleton is not ready to run as is. 
+You should at least define one route, one controller and create config file.
+
+INSTALLATION
+
+To install this module, run the following commands:
+
+	perl Makefile.PL
+	make
+	make test
+	make install
+
+Alternatively, to install with Module::Build, you can use the following commands:
+
+	perl Build.PL
+	./Build
+	./Build test
+	./Build install
+
+
+DEPENDENCIES
+
+None.
+
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2010, Yaroslav Korshak
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
