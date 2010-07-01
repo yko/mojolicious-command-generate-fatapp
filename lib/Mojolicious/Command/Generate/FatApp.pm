@@ -9,7 +9,6 @@ use base 'Mojo::Command';
 
 our $VERSION = '0.0.1';
 
-# TODO add default $class.conf config template
 # TODO make templates configurable
 
 __PACKAGE__->attr(description => <<'EOF');
@@ -28,9 +27,9 @@ sub run {
 
     # Script
     $self->render_to_rel_file('mojo', "$name/script/$name", $class);
-    $self->chmod_file("$name/script/$name", '0744');
+    $self->chmod_file("$name/script/$name", 0744);
 
-    # Appclass
+    # Appclass0
     my $app = $self->class_to_path($class);
     $self->render_to_rel_file('appclass', "$name/lib/$app", $class);
 
@@ -65,6 +64,9 @@ sub run {
         "$name/templates/exception.html.ep");
     $self->render_to_rel_file('layout',
         "$name/templates/layouts/default.html.ep");
+
+    $self->render_to_rel_file('config',
+      $name . '/' . Mojo::ByteStream->new($class)->decamelize . ".conf");
 }
 
 1;
@@ -100,10 +102,11 @@ use warnings;
 use base 'Mojolicious';
 
 __PACKAGE__->attr(
-    'config' => sub { {
-        loglevel => 'error',
-        layout => 'default',
-     }
+    'config' => sub {
+        {   loglevel => 'error',
+            mode     => 'production',
+            layout   => 'default',
+        };
     }
 );
 
@@ -117,6 +120,8 @@ sub startup {
             %{$self->plugin('json_config' => {file => '<%= Mojo::ByteStream->new($class)->decamelize %>.conf'})}
     });
 
+    $self->log->level($self->config->{'loglevel'});
+    $self->mode($self->config->{'mode'});
 
     $self->defaults(layout => $self->config->{'layout'});
 
@@ -248,8 +253,12 @@ use_ok('<%= $class %>::Model');
 %== content;
 </body>
 </html>
+@@ config
+{
+    "mode": "development",
+    "loglevel": "debug"
+}
 __END__
-
 =head1 NAME
 
 Mojolicious::Command::Generate::FatApp - App Generator Command
