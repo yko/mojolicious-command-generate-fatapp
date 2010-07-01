@@ -6,8 +6,35 @@ that generates more 'fat' application, then 'mojolicious generate app'.
 FatApp adds base controller and model classes, defines json_config loader
 and NOT defines any existing controller.
 
-FatApp generated skeleton is not ready to run as is. 
+FatApp-generated skeleton is not ready to run as is. 
 You should at least define one route, one controller and create config file.
+
+Structure of newly created skeleton 'test': 
+
+test
+|- t
+   |- basic.t
+
+|- lib
+   |- test.pm
+   |- test
+      |- Controller.pm
+      |- Controller
+         
+      |- Model.pm
+      |- Model
+
+|- script
+   |- test
+
+|- templates
+   |- not_found.html.ep
+   |- exception.html.ep
+   |- layouts
+      |- default.html.ep
+      
+|- log
+
 
 INSTALLATION
 
@@ -28,7 +55,7 @@ Alternatively, to install with Module::Build, you can use the following commands
 
 DEPENDENCIES
 
-None.
+Mojolicious.
 
 
 COPYRIGHT AND LICENCE
