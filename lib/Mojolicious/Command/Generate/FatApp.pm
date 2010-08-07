@@ -123,7 +123,7 @@ sub startup {
 
     $self->config({
             %{$self->config}, 
-            %{$self->plugin('json_config' => {file => '<%= Mojo::ByteStream->new($class)->decamelize %>.conf'})}
+            %{$self->plugin('json_config' => {ext => 'conf'})}
     });
 
     $self->log->level($self->config->{'loglevel'});
