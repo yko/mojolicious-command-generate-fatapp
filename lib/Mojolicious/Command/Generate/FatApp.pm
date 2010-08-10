@@ -27,7 +27,7 @@ sub run {
 
     # Script
     $self->render_to_rel_file('mojo', "$name/script/$name", $class);
-    $self->chmod_file("$name/script/$name", 0744);
+    $self->chmod_file("$name/script/$name", '0744');
 
     # Appclass0
     my $app = $self->class_to_path($class);
