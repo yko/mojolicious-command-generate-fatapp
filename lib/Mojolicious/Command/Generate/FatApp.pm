@@ -192,7 +192,8 @@ use_ok('<%= $class %>::Controller');
 use_ok('<%= $class %>::Model');
 
 @@ not_found
-<!doctype html><html>
+<!doctype html>
+<html>
     <head><title>Not Found</title></head>
     <body>
         The page you were requesting
@@ -201,7 +202,8 @@ use_ok('<%= $class %>::Model');
     </body>
 </html>
 @@ exception
-<!doctype html><html>
+<!doctype html>
+<html>
 % my $s = $self->stash;
 % my $e = $self->stash('exception');
 % delete $s->{inner_template};
@@ -270,6 +272,12 @@ __END__
 Mojolicious::Command::Generate::FatApp - App Generator Command
 
 =head1 SYNOPSIS
+
+You can run from command line:
+    
+    mojollicious generate fat_app my_fat_app
+
+Or use in your Perl code:
 
     use Mojolicious::Command::Generate::FatApp;
 
