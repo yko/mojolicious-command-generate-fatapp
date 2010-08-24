@@ -27,9 +27,9 @@ sub run {
 
     # Script
     $self->render_to_rel_file('mojo', "$name/script/$name", $class);
-    $self->chmod_file("$name/script/$name", '0744');
+    $self->chmod_file("$name/script/$name", 0744);
 
-    # Appclass0
+    # Appclass
     my $app = $self->class_to_path($class);
     $self->render_to_rel_file('appclass', "$name/lib/$app", $class);
 
@@ -110,8 +110,7 @@ use base 'Mojolicious';
 __PACKAGE__->attr(
     'config' => sub {
         {   loglevel => 'error',
-            mode     => 'production',
-            layout   => 'default',
+            mode     => 'production'
         };
     }
 );
@@ -126,10 +125,14 @@ sub startup {
             %{$self->plugin('json_config' => {ext => 'conf'})}
     });
 
-    $self->log->level($self->config->{'loglevel'});
-    $self->mode($self->config->{'mode'});
+    $self->log->level($self->config->{'loglevel'})
+        if $self->config->{'loglevel'};
 
-    $self->defaults(layout => $self->config->{'layout'});
+    $self->mode($self->config->{'mode'}) 
+        if $self->config->{'mode'};
+
+    $self->defaults(layout => $self->config->{'layout'})
+        if $self->config->{'layout'};
 
     $self->plugin('tag_helpers');
 
@@ -157,6 +160,60 @@ sub startup {
 }
 
 1;
+
+<% %>__END__
+
+=head1 <%= $class %> Application
+
+=head2 startup()
+
+This method inits <%= $class %> application, loads plugins and sets up routes.
+
+=head2 Configuration
+
+Configuration file <%= Mojo::ByteStream->new($class)->camelize %>.conf can be used to configure application.
+
+Here's default options reference:
+
+=over 4
+
+=item loglevel
+
+Minimal level of message to be logged.
+
+Possible values:
+
+    debug, info, warn, error, fatal
+
+Default value: error
+
+=item mode
+
+The operating mode for your application.
+
+Supported values: 
+
+    develompment, production
+
+But you can define any other mode, see L<Mojolicious> documentation.
+
+Default value: production
+
+=item layout
+
+This option sets default layout to be used in all your templates.
+In initial config it set to 'default'.
+
+To override this setting you can set up layou per template:
+
+    % layout 'non-default-layout';
+
+If you not want to use any layout, you should set layout to undef in yout template:
+
+    % layout undef;
+
+=back
+=cut
 @@ controller
 % my $class = shift;
 package <%= $class %>;
@@ -264,7 +321,8 @@ use_ok('<%= $class %>::Model');
 @@ config
 {
     "mode": "development",
-    "loglevel": "debug"
+    "loglevel": "debug",
+    "layout": "default"
 }
 __END__
 =head1 NAME
@@ -329,3 +387,4 @@ L<http://mojolicious.org>.
 Yaroslav Korshak  C<< <ykorshak@gmail.com> >>
 
 =cut
+cut
