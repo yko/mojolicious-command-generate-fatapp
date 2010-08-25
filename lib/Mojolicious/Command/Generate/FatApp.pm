@@ -387,4 +387,3 @@ L<http://mojolicious.org>.
 Yaroslav Korshak  C<< <ykorshak@gmail.com> >>
 
 =cut
-cut
