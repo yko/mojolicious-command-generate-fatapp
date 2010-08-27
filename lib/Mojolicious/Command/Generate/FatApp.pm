@@ -7,7 +7,7 @@ use strict;
 
 use base 'Mojo::Command';
 
-our $VERSION = '0.0.1';
+our $VERSION = '0.01_2';
 
 # TODO make templates configurable
 

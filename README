@@ -1,4 +1,4 @@
-fat-app version 0.0.1
+fat-app version 0.01_2
 
 FatApp is a Mojolicious applications generator, 
 that generates more 'fat' application, then 'mojolicious generate app'.
