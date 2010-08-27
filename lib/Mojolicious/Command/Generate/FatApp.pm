@@ -27,7 +27,7 @@ sub run {
 
     # Script
     $self->render_to_rel_file('mojo', "$name/script/$name", $class);
-    $self->chmod_file("$name/script/$name", 0744);
+    $self->chmod_file("$name/script/$name", oct('0744'));
 
     # Appclass
     my $app = $self->class_to_path($class);
@@ -241,7 +241,7 @@ use warnings;
 use strict;
 use warnings;
 
-use Test::More tests => 5;
+use Test::More tests => 3;
 use Test::Mojo;
 
 use_ok('<%= $class %>');
