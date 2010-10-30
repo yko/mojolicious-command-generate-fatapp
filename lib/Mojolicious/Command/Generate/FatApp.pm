@@ -7,6 +7,8 @@ use strict;
 
 use base 'Mojo::Command';
 
+use Getopt::Long;
+
 our $VERSION = '0.01_2';
 
 # TODO make templates configurable
@@ -16,11 +18,24 @@ Generate fat application.
 EOF
 
 __PACKAGE__->attr(usage => <<"EOF");
-usage: $0 generate fat_app [NAME]
+usage: $0 generate fat_app [OPTIONS] [NAME]
+options:
+
+--examples,     Generate example controller and model.
+ -e
+
 EOF
 
 sub run {
     my ($self, $class) = @_;
+
+    local @ARGV = @_ if @_;
+    my %opts;
+
+    GetOptions(
+        'examples|e'  => \$opts{examples}
+    );
+
     $class ||= 'FatApp';
 
     my $name = $self->class_to_file($class);
@@ -39,6 +54,11 @@ sub run {
     $self->render_to_rel_file('controller', "$name/lib/$path", $controller);
 
     $self->create_rel_dir("$name/lib/$class/Controller");
+
+    if ($opts{examples}) {
+        $path =~ s/\.pm$//;
+        $self->render_to_rel_file('controller_example', "$name/lib/$path/Example.pm", 'Example', $controller);
+    }
 
     # Model
     my $model = "${class}::Model";
@@ -224,7 +244,20 @@ use warnings;
 use base 'Mojolicious::Controller';
 
 1;
+@@ controller_example
+% my $class = shift;
+% my $namespace = shift;
+package <%= $namespace . '::' . $class %>;
 
+use strict;
+use warnings;
+use base '<%= $namespace %>';
+
+sub action {
+    my $c = shift;
+}
+
+1;
 @@ model
 % my $class = shift;
 package <%= $class %>;
