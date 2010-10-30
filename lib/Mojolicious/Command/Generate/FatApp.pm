@@ -117,13 +117,13 @@ __PACKAGE__->attr(
 
 sub startup {
     my $self = shift;
-    
+
     $self->routes->namespace('<%= $class %>::Controller');
 
-    $self->config({
-            %{$self->config}, 
-            %{$self->plugin('json_config' => {ext => 'conf'})}
-    });
+    $self->config( {
+<% %>            %{ $self->config }, 
+<% %>            %{ $self->plugin('json_config' => {ext => 'conf'}) }
+    } );
 
     $self->log->level($self->config->{'loglevel'})
         if $self->config->{'loglevel'};
@@ -143,7 +143,7 @@ sub startup {
 
     $self->plugin(
         'db', handler => 'dbi',
-        %{$self->config->{'dbi'}},
+<% %>        % { $self->config->{'dbi'} },
     );
 
 =cut 
@@ -206,11 +206,11 @@ In initial config it set to 'default'.
 
 To override this setting you can set up layou per template:
 
-    % layout 'non-default-layout';
+<% %>    % layout 'non-default-layout';
 
 If you not want to use any layout, you should set layout to undef in yout template:
 
-    % layout undef;
+<% %>    % layout undef;
 
 =back
 =cut
