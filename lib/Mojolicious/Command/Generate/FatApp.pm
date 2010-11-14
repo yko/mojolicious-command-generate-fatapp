@@ -8,6 +8,8 @@ use strict;
 use base 'Mojo::Command';
 
 use Getopt::Long;
+use FindBin;
+use Mojo::ByteStream 'b';
 
 our $VERSION = '0.01_2';
 
@@ -24,19 +26,31 @@ options:
 --examples,     Generate example controller and model.
  -e
 
+--controller,   Generate controller in existing application.
+ -c
+
 EOF
 
 sub run {
-    my ($self, $class) = @_;
+    my $self = shift;
 
     local @ARGV = @_ if @_;
+
     my %opts;
 
     GetOptions(
-        'examples|e'  => \$opts{examples}
+        'examples|e'  => \$opts{examples},
+        'controller|c'  => \$opts{controller},
     );
 
-    $class ||= 'FatApp';
+
+    my $class = shift(@ARGV) || 'FatApp';
+
+    if ($opts{controller}) {
+        die "No options allowed with 'controller'" if grep($_, values(%opts)) > 1;
+        my $app = $ENV{MOJO_APP};
+        return generate_controller($self, $class, $app)
+    }
 
     my $name = $self->class_to_file($class);
 
@@ -92,7 +106,20 @@ sub run {
         "$name/templates/layouts/default.html.ep");
 
     $self->render_to_rel_file('config',
-      $name . '/' . Mojo::ByteStream->new($class)->decamelize . ".conf");
+      $name . '/' . b($class)->decamelize . ".conf");
+}
+
+sub generate_controller {
+    my ($self, $class, $app) = @_;
+    require Mojo::Home;
+    my $home = Mojo::Home->new;
+    my $lib = $home->lib_dir;
+    die "Unable to locate libdir" unless $lib;
+
+    my $controller = "${app}::Controller::" . b($class)->camelize;
+    my $path       = $self->class_to_path($controller);
+    $self->render_to_rel_file('controller_example', "$lib/$path", b($class)->camelize, "${app}::Controller");
+    $self->create_dir($home->rel_dir("templates/" . b($class)->decamelize));
 }
 
 1;
