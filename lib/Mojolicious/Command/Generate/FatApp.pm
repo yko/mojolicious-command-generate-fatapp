@@ -154,6 +154,8 @@ use warnings;
 
 use base 'Mojolicious';
 
+__PACKAGE__->attr(controller_class => '<%= $class %>::Controller');
+
 __PACKAGE__->attr(
     'config' => sub {
         {   loglevel => 'error',
