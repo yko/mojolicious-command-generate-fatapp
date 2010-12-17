@@ -1,5 +1,8 @@
 Revision history for fat-app
 
+0.01_3  Thu Dec 16 11:16:43 2010
+        Cleanup static files
+
 0.01_2  Fri Aug 27 13:22:19 2010
         Override default controller class
         Add --examples option

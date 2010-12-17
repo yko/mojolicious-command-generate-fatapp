@@ -11,7 +11,7 @@ use Getopt::Long;
 use FindBin;
 use Mojo::ByteStream 'b';
 
-our $VERSION = '0.01_2';
+our $VERSION = '0.01_3';
 
 # TODO make templates configurable
 
@@ -98,10 +98,6 @@ sub run {
     $self->renderer->line_start('%%');
     $self->renderer->tag_start('<%%');
     $self->renderer->tag_end('%%>');
-    $self->render_to_rel_file('not_found',
-        "$name/templates/not_found.html.ep");
-    $self->render_to_rel_file('exception',
-        "$name/templates/exception.html.ep");
     $self->render_to_rel_file('layout',
         "$name/templates/layouts/default.html.ep");
 
@@ -310,66 +306,6 @@ use_ok('<%= $class %>');
 use_ok('<%= $class %>::Controller');
 use_ok('<%= $class %>::Model');
 
-@@ not_found
-<!doctype html>
-<html>
-    <head><title>Not Found</title></head>
-    <body>
-        The page you were requesting
-        "<%= $self->req->url->path || '/' %>"
-        could not be found.
-    </body>
-</html>
-@@ exception
-<!doctype html>
-<html>
-% my $s = $self->stash;
-% my $e = $self->stash('exception');
-% delete $s->{inner_template};
-% delete $s->{exception};
-% my $dump = dumper $s;
-% $s->{exception} = $e;
-    <head>
-	    <title>Exception</title>
-	    <style type="text/css">
-	        body {
-		        font: 0.9em Verdana, "Bitstream Vera Sans", sans-serif;
-	        }
-	        .snippet {
-                font: 115% Monaco, "Courier New", monospace;
-	        }
-	    </style>
-    </head>
-    <body>
-        <% if ($self->app->mode eq 'development') { %>
-	        <div>
-                This page was generated from the template
-                "templates/exception.html.ep".
-            </div>
-            <div class="snippet"><pre><%= $e->message %></pre></div>
-            <div>
-                <% for my $line (@{$e->lines_before}) { %>
-                    <div class="snippet">
-                        <%= $line->[0] %>: <%= $line->[1] %>
-                    </div>
-                <% } %>
-                <% if ($e->line->[0]) { %>
-                    <div class="snippet">
-	                    <b><%= $e->line->[0] %>: <%= $e->line->[1] %></b>
-	                </div>
-                <% } %>
-                <% for my $line (@{$e->lines_after}) { %>
-                    <div class="snippet">
-                        <%= $line->[0] %>: <%= $line->[1] %>
-                    </div>
-                <% } %>
-            </div>
-            <div class="snippet"><pre><%= $dump %></pre></div>
-        <% } else { %>
-            <div>Page temporarily unavailable, please come back later.</div>
-        <% } %>
-    </body>
-</html>
 @@ layout
 <!doctype html>
 <html>
