@@ -80,6 +80,7 @@ sub run {
     $self->create_rel_dir("$name/lib/$class/Model");
 
     # Test
+    $self->render_to_rel_file('test_lib', "$name/t/lib/Test/$class.pm", $class);
     $self->render_to_rel_file('test', "$name/t/basic.t", $class);
 
     # Log
@@ -147,6 +148,33 @@ $ENV{MOJO_APP} = '<%= $class %>';
 
 # Start commands
 Mojolicious::Commands->start;
+@@ test_lib
+% my $class = shift;
+package Test::<%= $class %>;
+
+use strict;
+use warnings;
+
+use base 'Test::Mojo';
+require Test::More;
+require <%= $class %>;
+
+sub new {
+    my $self = shift->SUPER::new(@_);
+    $self->app(<%= $class %>->new) unless $self->app;
+
+    return $self;
+}
+
+sub import {
+    my $class = shift;
+    my $caller = caller;
+    eval "package $caller; Test::More->import(\@_);";
+
+    $ENV{MOJO_EXE} = 'script/<%= b($class)->decamelize %>';
+}
+
+1;
 @@ appclass
 % my $class = shift;
 package <%= $class %>;
@@ -266,6 +294,29 @@ package <%= $class %>;
 use Mojo::Base '<%= shift || 'Mojolicious::Controller' %>';
 
 1;
+@@ controller_test
+% my $class = shift;
+% my $appclass = shift;
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use lib 't/lib', '../lib';
+
+use Test::<%= $appclass %> tests => 3;
+
+use_ok('<%= $class %>');
+
+my $c = new_ok('<%= $class %>');
+
+# Controller actions
+can_ok $c, qw/index/;
+
+my $t = Test::<%= $appclass %>->new;
+
+# Preform further tests
+
 @@ controller_example
 % my $class = shift;
 % my $namespace = shift;
