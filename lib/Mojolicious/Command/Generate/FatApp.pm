@@ -1,25 +1,22 @@
-# Copyright (C) 2010, Yaroslav Korshak.
- 
+# Copyright (C) 2010-2011, Yaroslav Korshak.
+
 package Mojolicious::Command::Generate::FatApp;
 
-use warnings;
-use strict;
-
-use base 'Mojo::Command';
+use Mojo::Base 'Mojo::Command';
 
 use Getopt::Long;
 use FindBin;
 use Mojo::ByteStream 'b';
 
-our $VERSION = '0.01_3';
+our $VERSION = '0.01_4';
 
 # TODO make templates configurable
 
-__PACKAGE__->attr(description => <<'EOF');
+has description => <<'EOF';
 Generate fat application.
 EOF
 
-__PACKAGE__->attr(usage => <<"EOF");
+has usage => <<"EOF";
 usage: $0 generate fat_app [OPTIONS] [NAME]
 options:
 
@@ -114,8 +111,17 @@ sub generate_controller {
 
     my $controller = "${app}::Controller::" . b($class)->camelize;
     my $path       = $self->class_to_path($controller);
-    $self->render_to_rel_file('controller_example', "$lib/$path", b($class)->camelize, "${app}::Controller");
-    $self->create_dir($home->rel_dir("templates/" . b($class)->decamelize));
+
+    $self->render_to_rel_file(
+        'controller_example', "$lib/$path",
+        b($class)->camelize,  "${app}::Controller"
+    );
+
+    $self->create_rel_dir("templates/" . b($class)->decamelize);
+
+    $self->render_to_rel_file('controller_test',
+        "t/controller/" . b($class)->decamelize . ".t",
+        "${app}::Controller::${class}", $app);
 }
 
 1;
@@ -128,10 +134,11 @@ __DATA__
 use strict;
 use warnings;
 
-use FindBin;
+use File::Basename 'dirname';
+use File::Spec;
 
-use lib "$FindBin::Bin/../lib";
-use lib "$FindBin::Bin/../../lib";
+use lib join '/', File::Spec->splitdir(dirname(__FILE__)), 'lib';
+use lib join '/', File::Spec->splitdir(dirname(__FILE__)), '..', 'lib';
 
 use Mojolicious::Commands;
 
@@ -140,25 +147,18 @@ $ENV{MOJO_APP} = '<%= $class %>';
 
 # Start commands
 Mojolicious::Commands->start;
-
 @@ appclass
 % my $class = shift;
 package <%= $class %>;
 
-use strict;
-use warnings;
+use Mojo::Base 'Mojolicious';
 
-use base 'Mojolicious';
-
-__PACKAGE__->attr(controller_class => '<%= $class %>::Controller');
-
-__PACKAGE__->attr(
-    'config' => sub {
-        {   loglevel => 'error',
-            mode     => 'production'
-        };
-    }
-);
+has controller_class => '<%= $class %>::Controller';
+has config => sub {
+    {   loglevel => 'error',
+        mode     => 'production'
+    };
+};
 
 sub startup {
     my $self = shift;
@@ -236,7 +236,7 @@ Default value: error
 
 The operating mode for your application.
 
-Supported values: 
+Supported values:
 
     develompment, production
 
@@ -263,10 +263,7 @@ If you not want to use any layout, you should set layout to undef in yout templa
 % my $class = shift;
 package <%= $class %>;
 
-use strict;
-use warnings;
-
-use base 'Mojolicious::Controller';
+use Mojo::Base '<%= shift || 'Mojolicious::Controller' %>';
 
 1;
 @@ controller_example
@@ -274,11 +271,16 @@ use base 'Mojolicious::Controller';
 % my $namespace = shift;
 package <%= $namespace . '::' . $class %>;
 
-use strict;
-use warnings;
-use base '<%= $namespace %>';
+use Mojo::Base '<%= $namespace %>';
 
-sub action {
+=head2 index
+Default action
+
+    GET /
+
+=cut
+
+sub index {
     my $c = shift;
 }
 
@@ -330,7 +332,7 @@ Mojolicious::Command::Generate::FatApp - App Generator Command
 =head1 SYNOPSIS
 
 You can run from command line:
-    
+
     mojollicious generate fat_app my_fat_app
 
 Or use in your Perl code:

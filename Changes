@@ -1,5 +1,9 @@
 Revision history for fat-app
 
+0.01_4  Fri Apr 08 07:30:57 2011
+        Cleanup
+        Updated to Mojolicious version 1.02
+
 0.01_3  Thu Dec 16 11:16:43 2010
         Cleanup static files
 
