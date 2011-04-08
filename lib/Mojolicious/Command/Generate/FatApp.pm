@@ -193,44 +193,53 @@ sub startup {
 
     $self->routes->namespace('<%= $class %>::Controller');
 
-    $self->config( {
-<% %>            %{ $self->config }, 
-<% %>            %{ $self->plugin('json_config' => {ext => 'conf'}) }
-    } );
-
-    $self->log->level($self->config->{'loglevel'})
-        if $self->config->{'loglevel'};
-
-    $self->mode($self->config->{'mode'}) 
-        if $self->config->{'mode'};
-
-    $self->defaults(layout => $self->config->{'layout'})
-        if $self->config->{'layout'};
-
-    $self->plugin('tag_helpers');
-
-=for Perhaps, you want to use addictions plugins:
-
-    $self->plugin('linked_content');
-    $self->plugin('navi_track');
-
-    $self->plugin(
-        'db', handler => 'dbi',
-<% %>        % { $self->config->{'dbi'} },
+    $self->config(
+<% %>        {   %{$self->config},
+<% %>            %{$self->plugin('json_config' => {ext => 'conf'})}
+        }
     );
 
-=cut 
+    $self->apply_config;
+    $self->setup_routes;
+}
 
-    $self->secret($self->config->{'secret'}) or
-        die "You shouldn't forget make your secrets - secret.";
+sub setup_routes {
+    my $self = shift;
 
     # Routes
     my $r = $self->routes;
 
     # Default route
 #   $r->route('/')->to('main#index');
-
 }
+
+sub apply_config {
+    my $self = shift;
+
+    # Avoid double-configuration
+    return if $self->{_configured}++;
+
+    # Set up default layout for all templates
+    $self->defaults(layout => $self->config->{'layout'})
+        if $self->config->{'layout'};
+
+    # Set log level
+    $self->log->level($self->config->{'loglevel'})
+        if $self->config->{'loglevel'};
+
+    # Set application mode
+    $self->mode($self->config->{'mode'})
+        if $self->config->{'mode'};
+
+    # Set secret passphrase for signed cookies
+    $self->secret($self->config->{'secret'});
+}
+
+has secret => sub {
+    exit warn "Looks like you forget to set up secret passphrase."
+      . "See http://mojolicio.us/perldoc?Mojolicious#secret\n";
+};
+
 
 1;
 
