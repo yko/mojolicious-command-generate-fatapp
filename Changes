@@ -1,5 +1,8 @@
 Revision history for fat-app
 
+0.01_5  Thu Aug 11 10:37:28 2011
+        Preload controller class to match new Mojolicious behavior
+
 0.01_4  Fri Apr 08 08:06:39 2011
         Cleanup
         Updated to Mojolicious version 1.02

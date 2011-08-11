@@ -9,7 +9,7 @@ use Getopt::Long;
 use FindBin;
 use Mojo::ByteStream 'b';
 
-our $VERSION = '0.01_4';
+our $VERSION = '0.01_5';
 
 # TODO make templates configurable
 
@@ -202,6 +202,17 @@ sub startup {
 
     $self->apply_config;
     $self->setup_routes;
+    $self->preload_controller;
+}
+
+sub preload_controller {
+    my $self = shift;
+    my $controller = $self->controller_class;
+    my $e = Mojo::Loader->new->load($controller);
+
+    if (ref $e) {
+        die qq/Loading base controller class "$controller" failed: $e/;
+    }
 }
 
 sub setup_routes {
