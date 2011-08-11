@@ -3,6 +3,7 @@
 package Mojolicious::Command::Generate::FatApp;
 
 use Mojo::Base 'Mojo::Command';
+use strict;
 
 use Getopt::Long;
 use FindBin;
